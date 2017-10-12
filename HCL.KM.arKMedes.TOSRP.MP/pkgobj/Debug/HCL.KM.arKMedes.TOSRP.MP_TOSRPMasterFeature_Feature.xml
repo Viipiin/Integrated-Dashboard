@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Feature xmlns="http://schemas.microsoft.com/sharepoint/" AlwaysForceInstall="TRUE" Id="19861629-49ef-450f-9968-29bca543ae13" ReceiverAssembly="HCL.KM.arKMedes.TOSRP.MP, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1498abc2ce278f0c" ReceiverClass="HCL.KM.arKMedes.TOSRP.MP.Features.TOSRPMasterFeature.TOSRPMasterFeatureEventReceiver" Scope="Web" Title="HCL.KM.arKMedes.TOSRP.MP Feature">
+  <ElementManifests>
+    <ElementManifest Location="TOSReporting\Elements.xml" />
+    <ElementFile Location="TOSReporting\TOSRPMaster.master" />
+  </ElementManifests>
+</Feature>

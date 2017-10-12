@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="77dba5da-3c78-4008-80b3-0ac25b2ebdf9" solutionId="77dba5da-3c78-4008-80b3-0ac25b2ebdf9" resetWebServer="false" sharePointProductVersion="15.0" name="HCL.KM.arKMedes.TOSRP.MP" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+  <features>
+    <featureReference itemId="d9e97f2f-78af-4e51-8a37-e9bfc716fde5" />
+  </features>
+</package>

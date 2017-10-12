@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <Module Name="TOSReporting" Url="_catalogs/masterpage">
+    <File Path="TOSReporting\TOSRPMaster.master" Url="TOSRPMaster.master" Type="GhostableInLibrary" />
+  </Module>
+</Elements>
