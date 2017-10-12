@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Solution xmlns="http://schemas.microsoft.com/sharepoint/" SolutionId="997454ed-6159-404d-8871-24fb4d99cba1" SharePointProductVersion="15.0">
+  <Assemblies>
+    <Assembly Location="HCL.KM.arKMedes.TOSRPPages.dll" DeploymentTarget="GlobalAssemblyCache" />
+  </Assemblies>
+  <FeatureManifests>
+    <FeatureManifest Location="HCL.KM.arKMedes.TOSRPPages_Reporting\Feature.xml" />
+  </FeatureManifests>
+</Solution>

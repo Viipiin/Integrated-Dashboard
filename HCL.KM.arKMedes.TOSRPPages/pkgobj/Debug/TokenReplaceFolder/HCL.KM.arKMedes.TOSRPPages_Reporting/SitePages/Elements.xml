@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <Module Name="SitePages"  Url="SitePages">
+    <File Path="SitePages\Dashboard.aspx" Url="Dashboard.aspx" Type="GhostableInLibrary">
+      <AllUsersWebPart ID="TB" WebPartOrder="2" WebPartZoneID="TitleBar">
+        <![CDATA[
+        <WebPart xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+			xmlns="http://schemas.microsoft.com/WebPart/v2" xmlns:twp="http://schemas.microsoft.com/WebPart/v2/TitleBar">
+          <Title>Title Bar</Title>
+          <HeaderTitle>Dashboard</HeaderTitle>
+          <SuppressWebPartChrome>false</SuppressWebPartChrome>
+          <ChromeType>None</ChromeType>
+          <IsVisible>true</IsVisible>
+          <FrameType>None</FrameType>
+          <Description>TOS Reporting</Description>
+          <IsIncluded>true</IsIncluded>
+          <PartOrder>2</PartOrder>
+          <FrameState>Normal</FrameState>
+          <Height />
+          <Width />
+          <AllowRemove>false</AllowRemove>
+          <AllowZoneChange>true</AllowZoneChange>
+          <AllowMinimize>false</AllowMinimize>
+          <AllowConnect>true</AllowConnect>
+          <AllowEdit>true</AllowEdit>
+          <AllowHide>true</AllowHide>
+          <IsVisible>true</IsVisible>
+          <AllowClose>false</AllowClose>
+          <DetailLink />
+          <HelpLink />
+          <HelpMode>Modeless</HelpMode>
+          <Dir>Default</Dir>
+          <PartImageSmall />
+          <MissingAssembly>Cannot import this Web Part.</MissingAssembly>
+          <PartImageLarge>/_layouts/images/mscontl.gif</PartImageLarge>
+          <IsIncludedFilter />
+          <AllowConnect>true</AllowConnect>
+          <ExportControlledProperties>true</ExportControlledProperties>
+          <ConnectionID>00000000-0000-0000-0000-000000000000</ConnectionID>
+          <Assembly>Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c</Assembly>
+          <TypeName>Microsoft.SharePoint.WebPartPages.TitleBarWebPart</TypeName>
+          <twp:HeaderTitle>Dashboard</twp:HeaderTitle>
+		  <twp:Image>/_layouts/15/images/arKMedes/TOS/OnboardingLogo.png</twp:Image>
+        </WebPart>      
+
+        ]]>
+      </AllUsersWebPart>
+      <AllUsersWebPart WebPartZoneID="MiddleColumn" WebPartOrder="1">
+		      <![CDATA[
+              <WebPart xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/WebPart/v2">
+                <FrameType>None</FrameType>
+                <Title>Content Editor</Title>
+                <Description>Allows authors to enter rich text content.</Description>
+                <IsIncluded>true</IsIncluded>
+                <PartOrder>1</PartOrder>
+                <FrameState>Normal</FrameState>
+                <Height />
+                <Width />
+                <AllowRemove>true</AllowRemove>
+                <AllowZoneChange>true</AllowZoneChange>
+                <AllowMinimize>true</AllowMinimize>
+                <AllowConnect>true</AllowConnect>
+                <AllowEdit>true</AllowEdit>
+                <AllowHide>true</AllowHide>
+                <IsVisible>true</IsVisible>
+                <DetailLink />
+                <HelpLink />
+                <HelpMode>Modeless</HelpMode>
+                <Dir>Default</Dir>
+                <PartImageSmall />
+                <ChromeType>None</ChromeType>
+                <MissingAssembly>Cannot import this Web Part.</MissingAssembly>
+                <PartImageLarge>/_layouts/images/mscontl.gif</PartImageLarge>
+                <IsIncludedFilter />          
+                <ExportControlledProperties>true</ExportControlledProperties>
+                <ConnectionID>00000000-0000-0000-0000-000000000000</ConnectionID>
+                <Assembly>Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c</Assembly>
+                <TypeName>Microsoft.SharePoint.WebPartPages.ContentEditorWebPart</TypeName>
+                <ContentLink xmlns="http://schemas.microsoft.com/WebPart/v2/ContentEditor">/sites/TOS Integrated Dashboard/DashboardAssets/Dashboard.txt</ContentLink>
+  
+                <Content xmlns="http://schemas.microsoft.com/WebPart/v2/ContentEditor">
+                               <![CDATA[
+                    .ms-TPBody .ms-ToolPartSpacing { 
+                            DISPLAY: inline 
+                    }</style>]]]]><![CDATA[>
+                </Content>
+                              
+                <PartStorage xmlns="http://schemas.microsoft.com/WebPart/v2/ContentEditor" />
+              </WebPart>
+              ]]>
+
+	      </AllUsersWebPart>
+    </File>
+  </Module>  
+</Elements>

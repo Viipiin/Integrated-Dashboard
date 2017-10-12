@@ -1,0 +1,671 @@
+﻿  <script type="text/javascript">
+        var arrColumnChart;
+        var arrPieChart;
+        var dtStatusPIChart;
+        var count = [];
+        var currentTab = '';
+
+        function webAPIsReportingFilters(q) {
+            var permissionId = GetUrlKeyValue('_u');
+            if (typeof permissionId !== 'undefined' && permissionId !== '') {
+                jQuery.ajax({
+                    url: "/sites/TOS Integrated Dashboard/_vti_bin/TOS/_api/ReportingFilters/" + permissionId,
+                    type: "GET",
+                    success: function (data, a, b, c) {
+                        if (data.length !== 0 && typeof data[0].Unauthorized == 'undefined') {
+                            bindFiltersDropDown(data, q.attributes['d-data'].nodeValue);
+                        } else if (typeof data[0].Unauthorized !== 'undefined') {
+                            window.location.replace(_spPageContextInfo.webAbsoluteUrl + "/_layouts/AccessDenied.aspx");
+                        }
+                    },
+                    error: function (err, arr, drr) {
+                        var errror = err;
+                    }
+                });
+            }
+        }
+        function bindFiltersDropDown(data, tabName) {
+            if (currentTab != tabName) {
+                jQuery.each(data[0], function (q, r) {
+                    var dropDownValue = r.split(';#');
+                    var innerDropDownText = "";
+                    for (var e = 0; e < dropDownValue.length; e++) {
+                        innerDropDownText += "<option value='" + dropDownValue[e].split(';@')[0] + "'>" + dropDownValue[e].replace(';@', ' (').replace('@;', ')') + "</option>";
+                    }
+                    jQuery("#ddl" + q + "" + tabName).html('');
+                    jQuery("#ddl" + q + "" + tabName).append(innerDropDownText);
+                });
+
+
+                if (tabName == "OnBoarding") {
+                    showReportsOnBasisOfFilter('OnBoarding');
+                }
+                else if (tabName == "Tracking") {
+                    showReportsOnBasisOfFilter('Tracking');
+                }
+                else if (tabName == "knowledgeIndex") {
+
+                }
+                currentTab = tabName;
+            }
+        }
+    </script>
+    <script type="text/javascript" src="/sites/TOS Integrated Dashboard/DashboardAssets/JS/chartloader.js"></script>
+    <script type="text/javascript">
+        google.charts.load("current", { packages: ['corechart'] });
+        // Callback that draws the Column Chart.
+        function drawColumnChart() {
+            try {
+
+                var data;
+                var isEmptyArray = false;
+                if (arrColumnChart.length == 0) {
+                    arrColumnChart.push(["Status", "Count", { role: "style" }]);
+                    arrColumnChart.push(["", 0, ""]);
+                    data = google.visualization.arrayToDataTable(arrColumnChart);
+                    isEmptyArray = true;
+                }
+                else {
+                    data = google.visualization.arrayToDataTable(arrColumnChart);
+                }
+
+                var view = new google.visualization.DataView(data);
+                view.setColumns([0, 1,
+                                 {
+                                     calc: "stringify",
+                                     sourceColumn: 1,
+                                     type: "string",
+                                     role: "annotation"
+                                 },
+                                 2]);
+
+                var options = {
+                    //  title: "Density of Precious Metals, in g/cm^3",
+                    vAxis: { title: 'Sum of No. of Resource' },
+                    hAxis: { title: 'Status' },
+                    width: 500,
+                    height: 300,
+                    seriesType: 'bars',
+                    series: { 5: { type: 'line' } },
+                    // bar: { groupWidth: "95%" },
+                    legend: { position: "Left" },
+                };
+                var chart;
+                var chart_Tracking;
+                if (currentTab == "OnBoarding") {
+                    chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
+                    google.visualization.events.addListener(chart, 'error', errorHandler);
+                    chart.draw(view, options);
+                }
+                else if (currentTab == "Tracking") {
+                    chart_Tracking = new google.visualization.ColumnChart(document.getElementById("columnchart_values_tracking"));
+                    google.visualization.events.addListener(chart_Tracking, 'error', errorHandler);
+                    chart_Tracking.draw(view, options);
+                }
+                else {
+
+                }
+
+                if (isEmptyArray) {
+                    if (currentTab == "OnBoarding") {
+                        jQuery("#columnchart_values").html('');
+                        jQuery("#columnchart_values").append("<div id='pieNoData' style='padding-left: 35%;font-size:15px !important;font-weight:bold !important; margin-top: 20%;'>No Data Available</span>");
+                    }
+                    else if (currentTab == "Tracking") {
+                        jQuery("#columnchart_values_tracking").html('');
+                        jQuery("#columnchart_values_tracking").append("<div id='pieNoData' style='padding-left: 35%;font-size:15px !important;font-weight:bold !important; margin-top: 20%;'>No Data Available</span>");
+                    }
+                    else if (currentTab == "knowledgeIndex") {
+
+                    }
+                }
+
+            } catch (e) {
+                console.log(e);
+                jQuery("#columnchart_values").html('');
+                jQuery("#columnchart_values_tracking").html('');
+                jQuery("#columnchart_values").append("<div id='pieNoData' style='padding-left: 35%;font-size:15px !important;font-weight:bold !important; margin-top: 20%;'>No Data Available</span>");
+                jQuery("#columnchart_values_tracking").append("<div id='pieNoData' style='padding-left: 35%;font-size:15px !important;font-weight:bold !important; margin-top: 20%;'>No Data Available</span>");
+            }
+
+        }
+
+        // Callback that draws the PIE Chart.
+        function drawPieChart() {
+            try {
+                var isEmptyArray = false;
+
+                var pieData;
+                var colorForSlices = [];
+
+                dtStatusPIChart.push(["Status", "Count"]);
+
+                for (var i = 0; i < Object.keys(count).length; i++) {
+                    var keyName = Object.keys(count)[i];
+                    var color = '';
+                    if (keyName == "Excellent Performer") {
+                        color = "#009900"
+                    }
+                    if (keyName == "Need Improvement") {
+                        color = "#CC0000"
+                    }
+                    if (keyName == "Good Performer") {
+                        color = "#FF6633"
+                    }
+
+                    colorForSlices.push(color);
+                    dtStatusPIChart.push([keyName, count[keyName]]);
+
+                }
+                if (Object.keys(count).length == 0) {
+                    dtStatusPIChart.push(["", 0]);
+                    isEmptyArray = true;
+                }
+
+                pieData = google.visualization.arrayToDataTable(dtStatusPIChart);
+                //   data.addRows(dtStatusPIChart)
+
+                var pieOptions = {
+                    title: 'Performance Wise',
+                    is3D: true,
+                    pieHole: 0.4,
+                    colors: colorForSlices
+                };
+                var pieChart;
+                var pieChartTracking;
+                if (currentTab == "OnBoarding") {
+                    pieChart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+                    google.visualization.events.addListener(pieChart, 'error', errorHandler);
+                    pieChart.draw(pieData, pieOptions);
+                }
+                else if (currentTab == "Tracking") {
+                    pieChartTracking = new google.visualization.PieChart(document.getElementById('piechart_3d_tracking'));
+                    google.visualization.events.addListener(pieChartTracking, 'error', errorHandler);
+                    pieChartTracking.draw(pieData, pieOptions);
+                }
+                if (isEmptyArray) {
+                    if (currentTab == "OnBoarding") {
+                        jQuery("#piechart_3d").html('');
+                        jQuery("#piechart_3d").append("<div id='pieNoData' style='padding-left: 35%;font-size:15px !important;font-weight:bold !important; margin-top: 20%;'>No Data Available</span>");
+                    }
+                    else if (currentTab == "Tracking") {
+                        jQuery("#piechart_3d_tracking").html('');
+                        jQuery("#piechart_3d_tracking").append("<div id='pieNoData' style='padding-left: 35%;font-size:15px !important;font-weight:bold !important; margin-top: 20%;'>No Data Available</span>");
+                    }
+                    else if (currentTab == "knowledgeIndex") {
+                    }
+                }
+                if (jQuery("#piechart_3d").find("span").text() !== "") {
+
+                }
+
+            }
+            catch (ex) {
+                console.log(ex);
+                jQuery("#piechart_3d").html('');
+                jQuery("#piechart_3d_tracking").html('');
+                jQuery("#piechart_3d").append("<div id='pieNoData' style='padding-left: 35%;font-size:15px !important;font-weight:bold !important; margin-top: 20%;'>No Data Available</span>");
+                jQuery("#piechart_3d_tracking").append("<div id='pieNoData' style='padding-left: 35%;font-size:15px !important;font-weight:bold !important; margin-top: 20%;'>No Data Available</span>");
+
+            }
+        }
+
+        function showReportsOnBasisOfFilter(tabName) {
+            try {
+                TOS_RequestStarted();
+                var sLOB = jQuery("#ddlLOB" + tabName).val() === "--Select--" ? "" : jQuery("#ddlLOB" + tabName).val();
+                if (sLOB == null) { sLOB = ""; }
+
+                var sEngagement = jQuery("#ddlEngagement" + tabName).val() === "--Select--" ? "" : jQuery("#ddlEngagement" + tabName).val();
+                if (sEngagement == null) { sEngagement = ""; }
+
+                var sMonth = jQuery("#ddlMonth" + tabName).val() === "--Select--" ? "" : jQuery("#ddlMonth" + tabName).val();
+                if (sMonth == null) { sMonth = ""; }
+
+                var sYear = jQuery("#ddlYear" + tabName).val() === "--Select--" ? "" : jQuery("#ddlYear" + tabName).val();
+                if (sYear == null) { sYear = ""; }
+
+                var sResourceType = jQuery("#ddlResourceType" + tabName).val() === "--Select--" ? "" : jQuery("#ddlResourceType" + tabName).val();
+                if (sResourceType == null) { sResourceType = ""; }
+
+                var sLocation = jQuery("#ddlLocation" + tabName).val() === "--Select--" ? "" : jQuery("#ddlLocation" + tabName).val();
+                if (sLocation == null) { sLocation = ""; }
+
+                var sProject = jQuery("#ddlProject" + tabName).val() === "--Select--" ? "" : jQuery("#ddlProject" + tabName).val();
+                if (sProject == null) { sProject = ""; }
+
+                arrColumnChart = [];
+                arrPieChart = [];
+                dtStatusPIChart = [];
+                count = [];
+
+                jQuery("#columnchart_values").html('');
+                jQuery("#columnchart_values_tracking").html('');
+                jQuery("#piechart_3d").html('');
+                jQuery("#piechart_3d_tracking").html('');
+
+                var serUrl = "/sites/TOS Integrated Dashboard/_vti_bin/TOS/_api/GetFiltersWiseChart?LOB=" + sLOB + "&Engagement=" + sEngagement + "&Month=" + sMonth + "&Year=" + sYear + "&Resource=" + sResourceType + "&Location=" + sLocation + "&Project=" + sProject + "&tab=" + tabName;
+                //CurrentTab
+                jQuery.ajax({
+                    url: serUrl,
+                    type: "GET",
+                    // async: false,
+                    headers: {
+                        "accept": "application/json;odata=verbose",
+                    },
+                    success: function (data) {
+
+                        /*Array for Column Chart */
+                        var columnChartDataTable = Object.keys(data)[0];
+                        if (columnChartDataTable == "Table") {
+                            var ArrColumnCount = data.Table.length;
+                            if (ArrColumnCount > 0) {
+                                if (Object.keys(data.Table[0]) != "Unauthorized") {
+                                    arrColumnChart.push(["Status", "Count", { role: "style" }]);
+                                    for (var i = 0; i < ArrColumnCount; i++) {
+                                        arrColumnChart.push([data.Table[i].Status, data.Table[i].Count, "#0072c6"])
+                                    }
+                                }
+                            }
+                        }
+
+                        /*Array for Pie Chart */
+                        var columnChartDataTable1 = Object.keys(data)[1];
+                        var arrPieChartColumnCount = data.Table1.length;
+                        if (columnChartDataTable1 == "Table1") {
+                            if (arrPieChartColumnCount > 0) {
+                                if (Object.keys(data.Table1[0]) != "Unauthorized") {
+                                    for (var i = 0; i < arrPieChartColumnCount; i++) {
+                                        arrPieChart.push([data.Table1[i].SLA])
+                                    }
+                                    $.each(arrPieChart, function () {
+                                        var num = this[0]; // Get number
+                                        count[num] = count[num] + 1 || 1; // Increment counter for each value
+                                    });
+                                }
+                            }
+                        }
+
+                        /*Draw PI Chart*/
+                        google.charts.setOnLoadCallback(drawPieChart);
+
+                        /*Draw Column Chart*/
+                        google.charts.setOnLoadCallback(drawColumnChart);
+                        TOS_RequestEnded();
+                    },
+                    error: function (data) {
+
+                    }
+                });
+            }
+            catch (ex) {
+                
+                console.log(ex);
+            }
+        }
+
+        function errorHandler(errorMessage) {
+            //curisosity, check out the error in the console
+            console.log(errorMessage);
+
+            //simply remove the error, the user never see it
+            google.visualization.errors.removeError(errorMessage.id);
+        }
+
+        // Code to show hide loader ================= Start ==========
+        function TOS_RequestEnded(sender, args) {
+            try {
+                waitDialog.close();
+                waitDialog = null;
+            } catch (ex) { }
+        };
+
+        function TOS_RequestStarted(sender, args) {
+            TOS_ShowWaitDialog();
+        };
+
+        function TOS_ShowWaitDialog() {
+            try {
+                //if (waitDialog == null) {
+                waitDialog = SP.UI.ModalDialog.showWaitScreenWithNoClose('Processing...', '', 80, 300);
+                //}
+            } catch (ex) { }
+        };
+        // ============================ END ========================
+
+        jQuery(document).ready(function () {
+            jQuery('#liOnBoardingTab').click();
+        });
+    </script>
+
+    <div class="container" style="display:none;">
+        <ul class="nav nav-tabs">
+            <li onclick="webAPIsReportingFilters(this);" d-data="OnBoarding" id="liOnBoardingTab" class="active"><a data-toggle="tab" href="#OnBoarding">Onboarding/Offboarding</a></li>
+            <li onclick="webAPIsReportingFilters(this);" d-data="Tracking"><a data-toggle="tab" href="#tracking">Tracking</a></li>
+            <li onclick="webAPIsReportingFilters(this);" d-data="knowledgeIndex"><a data-toggle="tab" href="#knowledgeIndex">Knowledge Index</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="OnBoarding" class="tab-pane fade in active">
+                <div id="divOnBoarding">
+                    <table id="tbl" class="table" cellpadding="0" cellspacing="0" border="0">
+                        <tr class="row1">
+                            <td>
+                                <label>LOB</label>
+                            </td>
+                            <td>
+                                <select id="ddlLOBOnBoarding" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Engagement Name</label>
+                            </td>
+                            <td>
+                                <select id="ddlEngagementOnBoarding" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Month</label>
+                            </td>
+                            <td>
+                                <select id="ddlMonthOnBoarding" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Year</label>
+                            </td>
+                            <td>
+                                <select id="ddlYearOnBoarding" class="form-control"></select>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-primary" title="Select required filter conditions and click on Refresh to see data" onclick="showReportsOnBasisOfFilter('OnBoarding')"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+                            </td>
+                        </tr>
+                        <tr class="row2">
+                            <td>
+                                <label>Resource</label>
+                            </td>
+                            <td>
+                                <select id="ddlResourceTypeOnBoarding" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Location</label>
+                            </td>
+                            <td>
+                                <select id="ddlLocationOnBoarding" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Project</label>
+                            </td>
+                            <td colspan="3">
+                                <select id="ddlProjectOnBoarding" class="form-control"></select>
+                            </td>
+
+                            <td>
+                                <button type="button" class="btn btn-primary" title="Click to view data in excel based on filter selection"><span class="glyphicon glyphicon-save"></span> Download</button>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <div id="columnchart_values" style="width: 500px; height: 300px; border: 4px solid rgba( 239,239,239,0.78 )"></div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div id="piechart_3d" style="width: 500px; height: 300px; border: 4px solid rgba( 239,239,239,0.78 )"></div>
+                        </div>
+                    </div>
+
+                    <table id="tbl" class="table" style=" margin-top: 6%;" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                            <td>
+                                <label>Start Date</label>
+                            </td>
+                            <td>
+                                <input type="text" id="txtDate">
+                                <iframe id='txtDateDatePickerFrame' title='Select a date from the calendar.' style='display:none; position:absolute; width:200px; z-index:101;' src='/_layouts/15/images/blank.gif?rev=23' class="owl-date-picker "></iframe>
+                                <a href='javascript:void()' style='vertical-align:top' onclick="clickDatePicker('txtDate', '/_layouts/15/iframe.aspx?&cal=1&lcid=1033&langid=1033&tz=-08:00:00.0002046&ww=0111110&fdow=0&fwoy=0&hj=0&swn=false&minjday=109207&maxjday=2666269&date=', '', event); return false;">
+                                    <img id='txtDateDatePickerImage' border='0' alt='Select a date from the calendar.' src='/_layouts/15/images/calendar_25.gif?rev=23'>
+                                </a>
+                            </td>
+                            <td>
+                                <label>End Date</label>
+                            </td>
+                            <td colspan="5">
+                                <input type="text" id="txtDate1">
+                                <iframe id='txtDate1DatePickerFrame' title='Select a date from the calendar.' style='display:none; position:absolute; width:200px; z-index:101;' src='/_layouts/15/images/blank.gif?rev=23' class="owl-date-picker "></iframe>
+                                <a href='javascript:void()' style='vertical-align:top' onclick="clickDatePicker('txtDate1', '/_layouts/15/iframe.aspx?&cal=1&lcid=1033&langid=1033&tz=-08:00:00.0002046&ww=0111110&fdow=0&fwoy=0&hj=0&swn=false&minjday=109207&maxjday=2666269&date=', '', event); return false;">
+                                    <img id='txtDate1DatePickerImage' border='0' alt='Select a date from the calendar.' src='/_layouts/15/images/calendar_25.gif?rev=23'>
+                                </a>
+                            </td>
+
+                            <td>
+                                <button type="button" class="btn btn-primary" title="Click to view data in excel based on dates selection"><span class="glyphicon glyphicon-save"></span> Download</button>
+                            </td>
+                        </tr>
+                    </table>
+
+
+                </div>
+            </div>
+            <div id="tracking" class="tab-pane fade">
+                <div id="divTrackingMenu">
+                    <table id="tblTracking" class="table" cellpadding="0" cellspacing="0" border="0">
+                        <tr class="row1">
+                            <td>
+                                <label>LOB</label>
+                            </td>
+                            <td>
+                                <select id="ddlLOBTracking" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Engagement Name</label>
+                            </td>
+                            <td>
+                                <select id="ddlEngagementTracking" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Month</label>
+                            </td>
+                            <td>
+                                <select id="ddlMonthTracking" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Year</label>
+                            </td>
+                            <td>
+                                <select id="ddlYearTracking" class="form-control"></select>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-primary" title="Select required filter conditions and click on Refresh to see data" onclick="showReportsOnBasisOfFilter('Tracking')"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+                            </td>
+                        </tr>
+                        <tr class="row2">
+                            <td>
+                                <label>Resource</label>
+                            </td>
+                            <td>
+                                <select id="ddlResourceTypeTracking" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Location</label>
+                            </td>
+                            <td>
+                                <select id="ddlLocationTracking" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Project</label>
+                            </td>
+                            <td colspan="3">
+                                <select id="ddlProjectTracking" class="form-control"></select>
+                            </td>
+
+                            <td>
+                                <button type="button" class="btn btn-primary" title="Click to view data in excel based on filter selection"><span class="glyphicon glyphicon-save"></span> Download</button>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <div id="columnchart_values_tracking" style="width: 500px; height: 300px; border: 4px solid rgba( 239,239,239,0.78 )"></div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div id="piechart_3d_tracking" style="width: 500px; height: 300px; border: 4px solid rgba( 239,239,239,0.78 )"></div>
+                        </div>
+                    </div>
+                    <table id="tbl" class="table" style=" margin-top: 6%;" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                            <td>
+                                <label>Start Date</label>
+                            </td>
+                            <td>
+                                <input type="text" id="txtDate3">
+                                <iframe id='txtDate3DatePickerFrame' title='Select a date from the calendar.' style='display:none; position:absolute; width:200px; z-index:101;' src='/_layouts/15/images/blank.gif?rev=23' class="owl-date-picker "></iframe>
+                                <a href='javascript:void()' style='vertical-align:top' onclick="clickDatePicker('txtDate3', '/_layouts/15/iframe.aspx?&cal=1&lcid=1033&langid=1033&tz=-08:00:00.0002046&ww=0111110&fdow=0&fwoy=0&hj=0&swn=false&minjday=109207&maxjday=2666269&date=', '', event); return false;">
+                                    <img id='txtDate3DatePickerImage' border='0' alt='Select a date from the calendar.' src='/_layouts/15/images/calendar_25.gif?rev=23'>
+                                </a>
+                            </td>
+                            <td>
+                                <label>End Date</label>
+                            </td>
+                            <td colspan="5">
+                                <input type="text" id="txtDate4">
+                                <iframe id='txtDate4DatePickerFrame' title='Select a date from the calendar.' style='display:none; position:absolute; width:200px; z-index:101;' src='/_layouts/15/images/blank.gif?rev=23' class="owl-date-picker "></iframe>
+                                <a href='javascript:void()' style='vertical-align:top' onclick="clickDatePicker('txtDate4', '/_layouts/15/iframe.aspx?&cal=1&lcid=1033&langid=1033&tz=-08:00:00.0002046&ww=0111110&fdow=0&fwoy=0&hj=0&swn=false&minjday=109207&maxjday=2666269&date=', '', event); return false;">
+                                    <img id='txtDate4DatePickerImage' border='0' alt='Select a date from the calendar.' src='/_layouts/15/images/calendar_25.gif?rev=23'>
+                                </a>
+                            </td>
+
+                            <td>
+                                <button type="button" class="btn btn-primary" title="Click to view data in excel based on dates selection"><span class="glyphicon glyphicon-save"></span> Download</button>
+                            </td>
+                        </tr>
+                    </table>
+
+
+                </div>
+            </div>
+            <div id="knowledgeIndex" class="tab-pane fade">
+                <div id="divKnowledgeIndex">
+                    <table class="table" id="tblKnowledgeIndex" border="0" cellspacing="0" cellpadding="0">
+                        <tr class="row1">
+                            <td>
+                                <label>LOB</label>
+                            </td>
+                            <td>
+                                <select id="ddlLOBknowledgeIndex" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Engagement Name</label>
+                            </td>
+                            <td>
+                                <select id="ddlEngagementknowledgeIndex" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Project</label>
+                            </td>
+                            <td>
+                                <select id="ddlProjectknowledgeIndex" class="form-control"></select>
+                            </td>
+
+                            <td>
+                                <button class="btn btn-primary" type="button" title="Select required filter conditions and click on Refresh to see data">
+                                    <span class="glyphicon glyphicon-refresh"></span>
+                                    Refresh
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="row2">
+                            <td>
+                                <label>Application/Project</label>
+                            </td>
+                            <td>
+                                <select id="ddlApplicationknowledgeIndex" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Month</label>
+                            </td>
+                            <td>
+                                <select id="ddlMonthknowledgeIndex" class="form-control"></select>
+                            </td>
+                            <td>
+                                <label>Year</label>
+                            </td>
+                            <td>
+                                <select id="ddlYearknowledgeIndex" class="form-control"></select>
+                            </td>
+
+                            <td>
+                                <button class="btn btn-primary" type="button" title="Click to view data in excel based on filter selection">
+                                    <span class="glyphicon glyphicon-save"></span>
+                                    Download
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <div class="div3">
+
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>Start Date</label>
+                            </td>
+                            <td>
+                                <input type="text" id="txtDate5">
+                                <iframe id='txtDate5DatePickerFrame' title='Select a date from the calendar.' style='display:none; position:absolute; width:200px; z-index:101;' src='/_layouts/15/images/blank.gif?rev=23' class="owl-date-picker "></iframe>
+                                <a href='javascript:void()' style='vertical-align:top' onclick="clickDatePicker('txtDate5', '/_layouts/15/iframe.aspx?&cal=1&lcid=1033&langid=1033&tz=-08:00:00.0002046&ww=0111110&fdow=0&fwoy=0&hj=0&swn=false&minjday=109207&maxjday=2666269&date=', '', event); return false;">
+                                    <img id='txtDate5DatePickerImage' border='0' alt='Select a date from the calendar.' src='/_layouts/15/images/calendar_25.gif?rev=23'>
+                                </a>
+                            </td>
+                            <td>
+                                <label>End Date</label>
+                            </td>
+                            <td colspan="5">
+                                <input type="text" id="txtDate6">
+                                <iframe id='txtDate6DatePickerFrame' title='Select a date from the calendar.' style='display:none; position:absolute; width:200px; z-index:101;' src='/_layouts/15/images/blank.gif?rev=23' class="owl-date-picker "></iframe>
+                                <a href='javascript:void()' style='vertical-align:top' onclick="clickDatePicker('txtDate6', '/_layouts/15/iframe.aspx?&cal=1&lcid=1033&langid=1033&tz=-08:00:00.0002046&ww=0111110&fdow=0&fwoy=0&hj=0&swn=false&minjday=109207&maxjday=2666269&date=', '', event); return false;">
+                                    <img id='txtDate6DatePickerImage' border='0' alt='Select a date from the calendar.' src='/_layouts/15/images/calendar_25.gif?rev=23'>
+                                </a>
+                            </td>
+
+                            <td>
+                                <button class="btn btn-primary" type="button" title="Click to view data in excel based on dates selection">
+                                    <span class="glyphicon glyphicon-save"></span>
+                                    Download
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        #divOnBoarding {
+            margin-top: 8px;
+        }
+
+        #tbl tr.row2 td {
+            padding-top: 10px;
+        }
+
+        #tbl td {
+            padding: 5px;
+        }
+
+        .form-control {
+            width: 125px !important;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .div3 {
+            background-color: lightgrey;
+            width: 300px;
+            height: 300px;
+            border: 1px solid green;
+            padding: 25px;
+            margin: 25px;
+        }
+    </style>

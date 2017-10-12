@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <Module Name="DashboardAssets" Url="DashboardAssets">
+    <File Path="DashboardAssets\Dashboard.txt" Url="Dashboard.txt" Type="Ghostable" />
+    <File Path="DashboardAssets\JS\chartloader.js" Type="Ghostable" Url="JS/chartloader.js" />
+    <File Path="DashboardAssets\JS\xlsx.min.js" Url="JS/xlsx.min.js" />
+    <File Path="DashboardAssets\JS\alasql.min.js" Url="JS/alasql.min.js" />
+  </Module>
+</Elements>

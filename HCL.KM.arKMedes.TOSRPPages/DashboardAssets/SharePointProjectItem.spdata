@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ProjectItem Type="Microsoft.VisualStudio.SharePoint.Module" DefaultFile="Elements.xml" SupportedTrustLevels="All" SupportedDeploymentScopes="Web, Site" xmlns="http://schemas.microsoft.com/VisualStudio/2010/SharePointTools/SharePointProjectItemModel">
+  <Files>
+    <ProjectItemFile Source="Elements.xml" Target="DashboardAssets\" Type="ElementManifest" />
+    <ProjectItemFile Source="Dashboard.txt" Target="DashboardAssets\" Type="ElementFile" />
+    <ProjectItemFile Source="JS\chartloader.js" Target="DashboardAssets\JS\" Type="ElementFile" />
+    <ProjectItemFile Source="JS\xlsx.min.js" Target="DashboardAssets\JS\" Type="ElementFile" />
+    <ProjectItemFile Source="JS\alasql.min.js" Target="DashboardAssets\JS\" Type="ElementFile" />
+  </Files>
+</ProjectItem>

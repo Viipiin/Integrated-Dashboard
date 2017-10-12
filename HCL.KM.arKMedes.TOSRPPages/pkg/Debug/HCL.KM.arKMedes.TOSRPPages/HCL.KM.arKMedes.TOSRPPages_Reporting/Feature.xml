@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Feature xmlns="http://schemas.microsoft.com/sharepoint/" AlwaysForceInstall="TRUE" Description="This feature is used for TOS Reporing default home page ." Id="fe44ada3-ad83-4eb0-a420-52f111d6aaae" ReceiverAssembly="HCL.KM.arKMedes.TOSRPPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=29b0772f87a6a8b0" ReceiverClass="HCL.KM.arKMedes.TOSRPPages.Features.ReportingHomeFeature.ReportingHomeFeatureEventReceiver" Scope="Web" Title="HCL.KM.arKMedes.TOSRPPages Feature">
+  <ElementManifests>
+    <ElementManifest Location="SitePages\Elements.xml" />
+    <ElementFile Location="SitePages\Dashboard.aspx" />
+    <ElementManifest Location="DashboardAssets\Elements.xml" />
+    <ElementFile Location="DashboardAssets\Dashboard.txt" />
+    <ElementFile Location="DashboardAssets\JS\chartloader.js" />
+  </ElementManifests>
+</Feature>
